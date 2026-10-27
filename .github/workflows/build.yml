@@ -22,6 +22,7 @@ jobs:
         id: paths
         run: |
           echo "SDK=${{ github.workspace }}/android-sdk" >> "$GITHUB_ENV"
+          echo "GRADLE_HOME=${{ github.workspace }}/gradle-8.0" >> "$GITHUB_ENV"
 
       - name: Cache Android SDK
         id: sdk-cache
@@ -50,8 +51,17 @@ jobs:
           echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
           echo "PATH=$SDK/cmdline-tools/latest/bin:$SDK/platform-tools:$SDK/build-tools/34.0.0:$PATH" >> "$GITHUB_ENV"
 
-      - name: Set up Gradle
-        uses: gradle/setup-gradle@v3
+      - name: Install Gradle 8.0
+        run: |
+          set -e
+          cd "${{ github.workspace }}"
+          if [ ! -d gradle-8.0 ]; then
+            curl -fsSL -o gradle-8.0-bin.zip https://services.gradle.org/distributions/gradle-8.0-bin.zip
+            unzip -q gradle-8.0-bin.zip
+            rm gradle-8.0-bin.zip
+          fi
+          chmod +x gradle-8.0/bin/gradle
+          echo "PATH=${{ github.workspace }}/gradle-8.0/bin:$PATH" >> "$GITHUB_ENV"
 
       - name: Build with Gradle
         run: gradle assembleRelease --no-daemon
