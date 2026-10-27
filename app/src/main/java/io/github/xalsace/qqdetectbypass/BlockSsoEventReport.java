@@ -5,12 +5,12 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import org.luckypray.dexkit.DexKitBridge;
 import org.luckypray.dexkit.query.BatchFindMethodUsingStrings;
+import org.luckypray.dexkit.query.FindClass;
 import org.luckypray.dexkit.result.MethodData;
 import org.luckypray.dexkit.result.ClassData;
 
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 对应 QQNT-Patcher security_rules.py 第 1 处：
@@ -32,17 +32,17 @@ public class BlockSsoEventReport {
             XposedBridge.log("[QQDetectBypass] ChannelReport class not found, skip SsoEventReport");
             return;
         }
-        try (DexKitBridge bridge = new DexKitBridge(cl, false)) {
+        try (DexKitBridge bridge = DexKitBridge.Companion.create(cl, false)) {
             BatchFindMethodUsingStrings query = new BatchFindMethodUsingStrings()
                     .addString(SSO)
                     .searchInClasses(java.util.Collections.singletonList(targetClass));
-            Map<String, List<MethodData>> result = bridge.batchFindMethodUsingStrings(query);
+            java.util.Map<String, List<MethodData>> result = bridge.batchFindMethodUsingStrings(query);
             int hit = 0;
             for (List<MethodData> methods : result.values()) {
                 for (MethodData md : methods) {
                     try {
                         Method m = md.getMethodInstance();
-                        XposedHelpers.hookMethod(m, new XC_MethodHook() {
+                        XposedBridge.hookMethod(m, new XC_MethodHook() {
                             @Override
                             protected void beforeHookedMethod(MethodHookParam p) {
                                 p.setResult(null);
@@ -61,10 +61,10 @@ public class BlockSsoEventReport {
     }
 
     private static ClassData findChannelReport(ClassLoader cl) {
-        try (DexKitBridge bridge = new DexKitBridge(cl, false)) {
-            org.luckypray.dexkit.query.FindClass fc =
-                    new org.luckypray.dexkit.query.FindClass().searchClassName(CHANNEL_REPORT);
-            List<ClassData> list = bridge.findClass(fc).list;
+        try (DexKitBridge bridge = DexKitBridge.Companion.create(cl, false)) {
+            FindClass fc = new FindClass().searchClasses(
+                    java.util.Collections.singletonList(CHANNEL_REPORT));
+            List<ClassData> list = bridge.findClass(fc);
             return list.isEmpty() ? null : list.get(0);
         } catch (Throwable t) {
             XposedBridge.log("[QQDetectBypass] findChannelReport fail: " + t);
