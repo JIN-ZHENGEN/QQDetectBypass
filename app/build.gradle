@@ -1,0 +1,44 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'io.github.xalsace.qqdetectbypass'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "io.github.xalsace.qqdetectbypass"
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    // 关键：so 以 STORED + 4K 对齐写入 APK，让 LspModuleClassLoader 能直接 mmap 加载 DexKit 的 libdexkit.so
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging true
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    compileOnly fileTree(dir: 'libs', include: ['*.jar'])
+    compileOnly 'de.robv.android.xposed:api:82'
+    compileOnly 'de.robv.android.xposed:api:82:sources'
+
+    // DexKit：按字符串常量反查 dex，版本无关定位 hook 目标
+    implementation 'org.luckypray:dexkit:2.0.0'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.23'
+}
