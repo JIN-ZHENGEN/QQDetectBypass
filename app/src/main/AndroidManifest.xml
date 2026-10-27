@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="io.github.xalsace.qqdetectbypass">
+
+    <application
+        android:allowBackup="true"
+        android:label="QQDetectBypass"
+        android:hasCode="true">
+
+        <meta-data
+            android:name="xposedmodule"
+            android:value="true" />
+        <meta-data
+            android:name="xposeddescription"
+            android:value="拦截 QQ 风控上报与硬件指纹收集，配合 AntiHookBypass 规避 hook 检测" />
+        <meta-data
+            android:name="xposedminversion"
+            android:value="93" />
+
+    </application>
+
+</manifest>
