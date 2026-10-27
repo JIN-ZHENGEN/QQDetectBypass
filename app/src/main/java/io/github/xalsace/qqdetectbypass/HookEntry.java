@@ -1,10 +1,10 @@
 package io.github.xalsace.qqdetectbypass;
 
-import de.robv.android.xposed.IXposedMod;
+import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import de.robv.android.xposed.XposedBridge;
 
-public class HookEntry implements IXposedMod {
+public class HookEntry implements IXposedHookLoadPackage {
     private static final String TAG = "QQDetectBypass";
 
     @Override
